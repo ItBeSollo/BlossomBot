@@ -1,0 +1,52 @@
+[
+    {
+        "name": "Caterpie",
+        "image_url": "https://www.serebii.net/art/th/10.png",
+        "moves": ["Tackle", "String Shot"]
+    },
+    {
+        "name": "Weedle",
+        "image_url": "https://www.serebii.net/art/th/13.png",
+        "moves": ["Poison Sting", "String Shot"]
+    },
+    {
+        "name": "Rhyhorn",
+        "image_url": "https://www.serebii.net/art/th/111.png",
+        "moves": ["Horn Attack", "Stomp"]
+    },
+    {
+        "name": "Onix",
+        "image_url": "https://www.serebii.net/art/th/95.png",
+        "moves": ["Rock Throw", "Bind"]
+    },
+    {
+        "name": "Clefairy",
+        "image_url": "https://www.serebii.net/art/th/35.png",
+        "moves": ["Pound", "Sing"]
+    },
+    {
+        "name": "Zubat",
+        "image_url": "https://www.serebii.net/art/th/41.png",
+        "moves": ["Leech Life", "Supersonic"]
+    },
+    {
+        "name": "Pikachu",
+        "image_url": "https://www.serebii.net/art/th/25.png",
+        "moves": ["Thunderbolt", "Quick Attack", "Thunder Wave"]
+    },
+    {
+        "name": "Machop",
+        "image_url": "https://www.serebii.net/art/th/66.png",
+        "moves": ["Karate Chop", "Low Kick", "Leer"]
+    },
+    {
+        "name": "Geodude",
+        "image_url": "https://www.serebii.net/art/th/74.png",
+        "moves": ["Rock Throw","Rollout"]
+    },
+    {
+        "name": "Bulbasaur",
+        "image_url": "https://www.serebii.net/art/th/1.png",
+        "moves": ["Rock Throw","Rollout"]
+    }
+]

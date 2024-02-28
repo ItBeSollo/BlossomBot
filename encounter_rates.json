@@ -1,0 +1,12 @@
+{
+    "forest": {
+        "1": {"Pikachu": 0.2, "Bulbasaur": 0.3, "Caterpie": 0.4, "Weedle": 0.1},
+        "2": {"Pikachu": 0.15, "Bulbasaur": 0.25, "Caterpie": 0.35, "Weedle": 0.25}
+    },
+    "mountain": {
+        "1": {"Geodude": 0.3, "Machop": 0.2, "Onix": 0.1, "Rhyhorn": 0.4}
+    },
+    "cave": {
+        "1": {"Zubat": 0.4, "Geodude": 0.2, "Clefairy": 0.1, "Machop": 0.3}
+    }
+}

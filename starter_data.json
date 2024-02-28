@@ -1,0 +1,17 @@
+{
+  "Bulbasaur": {
+    "name": "Bulbasaur",
+    "type": "Grass",
+    "description": "A Grass-type Pokémon with a plant bulb on its back."
+  },
+  "Charmander": {
+    "name": "Charmander",
+    "type": "Fire",
+    "description": "A Fire-type Pokémon with a flame burning on the tip of its tail."
+  },
+  "Squirtle": {
+    "name": "Squirtle",
+    "type": "Water",
+    "description": "A Water-type Pokémon with a shell on its back."
+  }
+}

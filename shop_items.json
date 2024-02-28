@@ -1,0 +1,43 @@
+{
+    "potions": {
+      "name": "Potion",
+      "description": "Restores a Pokemon's HP by 20 points.",
+      "price": 50
+    },
+    "rare_candies": {
+      "name": "Rare Candy",
+      "description": "Instantly levels up a Pokemon by one level.",
+      "price": 500
+    },
+    "tms": {
+      "name": "TM",
+      "description": "Teaches a new move to a Pokemon.",
+      "price": 300
+    },
+    "berries": {
+      "name": "Berry",
+      "description": "A delicious and nutritious berry that can be held by a Pokemon. Effects vary.",
+      "price": 80
+    },
+    "evolutionary_stones": {
+      "name": "Evolutionary Stone",
+      "description": "A special stone used to evolve certain species of Pokemon.",
+      "price": 1000
+    },
+    "incense": {
+      "name": "Incense",
+      "description": "Emits a scent that attracts specific types of Pokemon.",
+      "price": 150
+    },
+    "egg": {
+      "name": "Egg",
+      "description": "A mysterious egg that may hatch into a Pokemon.",
+      "price": 200
+    },
+    "power_items": {
+      "name": "Power Item",
+      "description": "A held item that boosts a specific stat during battles.",
+      "price": 400
+    }
+  }
+  

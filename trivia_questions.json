@@ -1,0 +1,44 @@
+{
+    "easy": [
+        {
+            "question": "Which Pokemon is known as the 'Electric Mouse' Pokémon?",
+            "answer": "Pikachu"
+        },
+        {
+            "question": "What type of Pokemon is Charmander?",
+            "answer": "Fire"
+        },
+        {
+            "question": "What is the evolved form of Caterpie?",
+            "answer": "Metapod"
+        }
+    ],
+    "medium": [
+        {
+            "question": "Which Pokemon is known as the 'Seed Pokémon'?",
+            "answer": "Bulbasaur"
+        },
+        {
+            "question": "What is the maximum level a Pokemon can reach?",
+            "answer": "100"
+        },
+        {
+            "question": "Which Pokemon evolves into Gyarados?",
+            "answer": "Magikarp"
+        }
+    ],
+    "hard": [
+        {
+            "question": "What is the original Pokemon number of Mew?",
+            "answer": "151"
+        },
+        {
+            "question": "Which Pokemon is known as the 'Dragon' Pokemon?",
+            "answer": "Dragonite"
+        },
+        {
+            "question": "Who is the creator of the Pokemon series?",
+            "answer": "Satoshi Tajiri"
+        }
+    ]
+}

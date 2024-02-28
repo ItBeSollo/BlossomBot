@@ -1,0 +1,13 @@
+{
+    "Pikachu": ["Thunderbolt", "Quick Attack", "Thunder Wave"],
+    "Bulbasaur": ["Vine Whip", "Razor Leaf", "Poison Powder"],
+    "Charmander": ["Ember", "Scratch", "Growl"],
+    "Squirtle": ["Water Gun", "Bubble", "Withdraw"],
+    "Machop": ["Karate Chop", "Low Kick", "Leer"],
+    "Caterpie": ["Tackle", "String Shot"],
+    "Weedle": ["Poison Sting", "String Shot"],
+    "Rhyhorn": ["Horn Attack", "Stomp"],
+    "Onix": ["Rock Throw", "Bind"],
+    "Clefairy": ["Pound", "Sing"],
+    "Zubat": ["Leech Life", "Supersonic"]
+}
