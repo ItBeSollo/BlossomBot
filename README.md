@@ -7,7 +7,7 @@ This Discord bot is built using Python and the Disnake/Discord.py library. It of
 
 ## Available Cogs
 - **Admin:** Commands for managing user data, such as adding tokens, redeems, and wiping user profiles.
-- **Battle:** Initiate Pokémon battles between users or against NPCs.
+- **Battle:** Initiate Pokémon battles between users. In progress.
 - **PokemonCog:** Commands related to Pokémon information, collection management, team building, and more.
 - **Raid:** Organize and participate in raids against powerful raid bosses.
 - **Safari:** Start expeditions in different locations to discover wild Pokémon.
