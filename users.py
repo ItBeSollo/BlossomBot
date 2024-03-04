@@ -1,9 +1,9 @@
-import disnake
+import discord
 from datetime import datetime
 import json
-from disnake.ext import commands
+from discord.ext import commands
 
-class UsersCog(commands.Cog):
+class Users(commands.Cog):
     """
     A cog for managing user-related commands such as displaying trainer information
     and starting a new user profile.
@@ -63,7 +63,7 @@ class UsersCog(commands.Cog):
         user_info = user_data[user_id]
 
         # Create embed to display user information
-        embed = disnake.Embed(
+        embed = discord.Embed(
             title=f"{ctx.author.name}'s Trainer Card",
             description=f"Trainer Nick: {user_info.get('nickname', 'N/A')}",
             colour=0x00b0f4,
@@ -294,12 +294,6 @@ class UsersCog(commands.Cog):
             
         with open('inventory.json', 'w') as file:
             json.dump(inventory_data, file, indent=4)
-
-def setup(bot):
-    """
-    Sets up the UsersCog and adds it to the Discord bot.
-
-    Parameters:
-        bot (commands.Bot): The Discord bot instance.
-    """
-    bot.add_cog(UsersCog(bot))
+            
+async def setup(bot):
+    await bot.add_cog(Users(bot))
