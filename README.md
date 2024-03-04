@@ -3,7 +3,7 @@
 Welcome to the Pokémon Discord Bot repository! This bot is designed to bring the world of Pokémon to your Discord server, providing various features and commands for Pokémon trainers and enthusiasts.
 
 ## About the Bot
-This Discord bot is built using Python and the Disnake/Discord.py library. It offers a range of functionalities to enhance your server's Pokémon experience, including battling, managing Pokémon collections, organizing raids, hosting trivia games, and more.
+This Discord bot is built using Python and the Discord.py library. It offers a range of functionalities to enhance your server's Pokémon experience, including battling, managing Pokémon collections, organizing raids, hosting trivia games, and more.
 
 ## Available Cogs
 - **Admin:** Commands for managing user data, such as adding tokens, redeems, and wiping user profiles.
