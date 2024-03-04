@@ -1,10 +1,10 @@
-import disnake
+import pokebase as pb
 import random
-from disnake.ext import commands, tasks
+from discord.ext import commands, tasks
 import random
 import json
 import asyncio
-from datetime import datetime, timedelta
+
 
 class Safari(commands.Cog):
     """A cog for managing expeditions and encounters in the safari adventure game."""
@@ -170,14 +170,13 @@ class Safari(commands.Cog):
 
     def get_pokemon_image_url(self, pokemon_name):
         """Get the image URL for a Pokémon."""
-        # Load data from JSON file that holds available moves, names of Pokémon, and image URLs
-        with open('pokemon_data.json', 'r') as file:
-            pokemon_data = json.load(file)
-        
-        # Find the image URL for the given Pokémon name
-        for entry in pokemon_data:
-            if entry["name"] == pokemon_name:
-                return entry["image_url"]
+        # Get the Pokemon species object based on the name
+        pokemon_species = pb.pokemon(pokemon_name.lower())
+
+        # Get the URL for the official artwork
+        official_artwork_url = pokemon_species.sprites.other.official_artwork.front_default
+        return official_artwork_url
+            
             
     def get_random_moves(self, pokemon_name):
         """Get random moves for a Pokémon."""
@@ -239,6 +238,5 @@ class Safari(commands.Cog):
         with open('collections.json', 'w') as file:
             json.dump(collections, file, indent=4)
 
-def setup(bot):
-    """Add the Safari cog to the bot."""
-    bot.add_cog(Safari(bot))
+async def setup(bot):
+    await bot.add_cog(Safari(bot))
