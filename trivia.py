@@ -1,10 +1,10 @@
-import disnake
+import discord
 import json
 import asyncio
 import random
-from disnake.ext import commands
+from discord.ext import commands
 
-class TriviaCog(commands.Cog):
+class Trivia(commands.Cog):
     """
     A cog for managing trivia games, including starting games, answering questions, and displaying leaderboards.
     """
@@ -76,7 +76,7 @@ class TriviaCog(commands.Cog):
         question = random.choice(questions)
 
         # Send the question to the user
-        embed = disnake.Embed(title="Trivia Question", description=question['question'], color=disnake.Color.blue())
+        embed = discord.Embed(title="Trivia Question", description=question['question'], color=discord.Color.blue())
         await ctx.send(embed=embed)
 
         # Add user to trivia in progress
@@ -162,24 +162,16 @@ class TriviaCog(commands.Cog):
         sorted_scores = sorted(user_scores.items(), key=lambda x: x[1], reverse=True)
 
         # Create leaderboard embed
-        embed = disnake.Embed(title="Trivia Leaderboard", color=disnake.Color.gold())
+        embed = discord.Embed(title="Trivia Leaderboard", color=discord.Color.gold())
         for idx, (user_id, score) in enumerate(sorted_scores[:5], start=1):
             try:
                 member = await ctx.guild.fetch_member(int(user_id))
                 if member:
                     embed.add_field(name=f"{idx}. {member.display_name}", value=f"Score: {score}", inline=False)
-            except disnake.NotFound:
+            except discord.NotFound:
                 # Handle the case where the member is not found
                 embed.add_field(name=f"{idx}. User (ID: {user_id})", value=f"Score: {score}", inline=False)
 
         await ctx.send(embed=embed)
-
-
-def setup(bot):
-    """
-    Adds the TriviaCog to the bot.
-
-    Parameters:
-        bot (commands.Bot): The bot instance.
-    """
-    bot.add_cog(TriviaCog(bot))
+async def setup(bot):
+    await bot.add_cog(Trivia(bot))
