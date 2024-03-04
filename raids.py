@@ -1,8 +1,9 @@
-from disnake.ext import commands, tasks
+from discord.ext import commands, tasks
+import pokebase as pb
 import random
 import json
 
-class Raid(commands.Cog):
+class Raids(commands.Cog):
     """
     A cog for managing raids, including auto-attacks, joining raids, and battling raid bosses.
     """
@@ -264,7 +265,7 @@ class Raid(commands.Cog):
             await ctx.send("You haven't selected a Pokémon.")
 
     @commands.command()
-    async def attack(self, ctx):
+    async def raidattack(self, ctx):
         """
         Allows a user to attack the raid boss during a raid.
         """
@@ -385,29 +386,13 @@ class Raid(commands.Cog):
             return ["Tackle", "Tackle"]  # Default moves if moves.json file is not found
 
     def get_pokemon_image_url(self, pokemon_name):
-        """
-        Gets the image URL for a Pokémon.
+        """Get the image URL for a Pokémon."""
+        # Get the Pokemon species object based on the name
+        pokemon_species = pb.pokemon(pokemon_name.lower())
 
-        Parameters:
-            pokemon_name (str): The name of the Pokémon.
+        # Get the URL for the official artwork
+        official_artwork_url = pokemon_species.sprites.other.pokemon_species.sprites.official_artwork.front_default
+        return official_artwork_url
 
-        Returns:
-            str: The URL of the Pokémon's image.
-        """
-        # Load data from JSON file that holds available moves, names of Pokémon, and image URLs
-        with open('pokemon_data.json', 'r') as file:
-            pokemon_data = json.load(file)
-        
-        # Find the image URL for the given Pokémon name
-        for entry in pokemon_data:
-            if entry["name"] == pokemon_name:
-                return entry["image_url"]
-
-def setup(bot):
-    """
-    Adds the Raid cog to the bot.
-
-    Parameters:
-        bot (commands.Bot): The bot instance.
-    """
-    bot.add_cog(Raid(bot))
+async def setup(bot):
+    await bot.add_cog(Raids(bot))
