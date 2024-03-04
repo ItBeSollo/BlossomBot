@@ -1,10 +1,10 @@
+import discord
 import json
-from disnake.ext import commands
+from discord.ext import commands
 
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
     @commands.command(aliases=["yeet"])
     @commands.is_owner()
     async def wipe(self, ctx, user_id: int):
@@ -116,5 +116,5 @@ class Admin(commands.Cog):
 
         await ctx.send(f"Successfully added {amount} tokens to user {user_id}'s balance.")
 
-def setup(bot):
-    bot.add_cog(Admin(bot))
+async def setup(bot):
+    await bot.add_cog(Admin(bot))
