@@ -1,8 +1,8 @@
-import disnake
-from disnake.ext import commands
 import json
+import discord
+from discord.ext import commands
 
-class Shop(commands.Cog):
+class Inventory(commands.Cog):
     """
     A cog for handling shop-related commands and operations.
     """
@@ -41,7 +41,7 @@ class Shop(commands.Cog):
             return
 
         # Create an embed to display the inventory
-        embed = disnake.Embed(title=f"{ctx.author.name}'s Bag", color=disnake.Color.blurple())
+        embed = discord.Embed(title=f"{ctx.author.name}'s Bag", color=discord.Color.blurple())
 
         for item_name, quantity in user_inventory.items():
             embed.add_field(name=item_name, value=f"Quantity: {quantity}", inline=False)
@@ -131,5 +131,5 @@ class Shop(commands.Cog):
         with open('user_data.json', 'w') as file:
             json.dump(user_data, file, indent=4)
 
-def setup(bot):
-    bot.add_cog(Shop(bot))
+async def setup(bot):
+    await bot.add_cog(Inventory(bot))
