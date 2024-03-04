@@ -1,26 +1,10 @@
-import disnake, asyncio
-from disnake.ext import commands
 import json
-import random
+import discord
+import asyncio
 from datetime import datetime
+from discord.ext import commands
 
-intents = disnake.Intents.default()
-intents.message_content = True
-
-bot = commands.Bot(command_prefix=';', intents=intents)
-
-# Load starter Pokémon data from JSON
-def load_starter_data():
-    """
-    Load starter Pokémon data from a JSON file.
-
-    Returns:
-    - dict: The loaded starter Pokémon data.
-    """
-    with open('starter_data.json', 'r') as file:
-        return json.load(file)
-
-class PokemonCog(commands.Cog):
+class Pokemon(commands.Cog):
     """
     A cog for managing Pokémon-related commands.
     """
@@ -29,7 +13,7 @@ class PokemonCog(commands.Cog):
         Initialize the PokemonCog cog.
 
         Parameters:
-        - bot (disnake.ext.commands.Bot): The bot instance.
+        - bot (discord.ext.commands.Bot): The bot instance.
         """
         self.bot = bot
         self.pokemon_data = self.load_pokemon_data()
@@ -49,7 +33,7 @@ class PokemonCog(commands.Cog):
         Get information about a Pokémon from the Pokédex.
 
         Parameters:
-        - ctx (disnake.ext.commands.Context): The context of the command.
+        - ctx (discord.ext.commands.Context): The context of the command.
         - pokemon_name (str): The name of the Pokémon.
         """
         # Load data from pokedata.json
@@ -69,7 +53,7 @@ class PokemonCog(commands.Cog):
         stats = pokemon_info["stats"]
 
         # Create the embed
-        embed = disnake.Embed(title=pokemon_name.capitalize(), color=disnake.Color.green())
+        embed = discord.Embed(title=pokemon_name.capitalize(), color=discord.Color.green())
         embed.add_field(name="Types", value=types, inline=False)
         embed.add_field(name="Abilities", value=abilities, inline=False)
         embed.add_field(name="Stats", value=f"HP: {stats['hp']}\nAttack: {stats['attack']}\nDefense: {stats['defense']}\nSpecial Attack: {stats['special_attack']}\nSpecial Defense: {stats['special_defense']}\nSpeed: {stats['speed']}", inline=False)
@@ -93,7 +77,7 @@ class PokemonCog(commands.Cog):
         with open('collections.json', 'r') as file:
             pokemon_data = json.load(file)
 
-        embed = disnake.Embed(title="Your Current Team!", color=0xeee647)
+        embed = discord.Embed(title="Your Current Team!", color=0xeee647)
 
         for slot in range(1, 7):
             pokemon_id = user_team.get(str(slot))
@@ -274,7 +258,7 @@ class PokemonCog(commands.Cog):
             await ctx.send("You haven't caught any Pokémon yet!")
             return
 
-        embed = disnake.Embed(title=f"{ctx.author.name}'s Pokémon Collection", color=disnake.Color.green())
+        embed = discord.Embed(title=f"{ctx.author.name}'s Pokémon Collection", color=discord.Color.green())
         for pokemon in user_pokemon:
             # Extract ID, name, and level from each Pokémon object
             pokemon_id = pokemon.get('id')
@@ -311,7 +295,7 @@ class PokemonCog(commands.Cog):
             for pokemon in user_pokemon:
                 if pokemon.get('selected', False):
                     # Found the selected Pokémon
-                    embed = disnake.Embed(title=f"Level {pokemon.get('level', 'Unknown')} {pokemon.get('name', 'Unknown')}", color=disnake.Color.blue(), timestamp=datetime.now())
+                    embed = discord.Embed(title=f"Level {pokemon.get('level', 'Unknown')} {pokemon.get('name', 'Unknown')}", color=discord.Color.blue(), timestamp=datetime.now())
                     embed.set_author(name=f"{ctx.author.name}'s Mon", icon_url=ctx.author.avatar)
                     embed.add_field(name="Statistics",
                                     value=f"**ATK**: {pokemon.get('ATK', 'Unknown')}\n**DEF**: {pokemon.get('DEF', 'Unknown')}",
@@ -331,7 +315,7 @@ class PokemonCog(commands.Cog):
         for pokemon in user_pokemon:
             if pokemon['id'] == pokemon_id:
                 # Found the Pokémon with the given ID
-                embed = disnake.Embed(title=f"Level {pokemon.get('level', 'Unknown')} {pokemon.get('name', 'Unknown')}", color=disnake.Color.blue(), timestamp=datetime.now())
+                embed = discord.Embed(title=f"Level {pokemon.get('level', 'Unknown')} {pokemon.get('name', 'Unknown')}", color=discord.Color.blue(), timestamp=datetime.now())
                 embed.set_author(name=f"{ctx.author.name}'s Mon", icon_url=ctx.author.avatar)
                 embed.add_field(name="Statistics",
                                 value=f"**ATK**: {pokemon.get('ATK', 'Unknown')}\n**DEF**: {pokemon.get('DEF', 'Unknown')}",
@@ -346,121 +330,6 @@ class PokemonCog(commands.Cog):
         # If the loop finishes without finding the Pokémon, send a message
         await ctx.send(f"No information found for Pokémon with ID {pokemon_id}.")
 
-    @commands.command()
-    async def select_starter(self, ctx):
-        """
-        Allows the user to select a starter Pokémon.
 
-        Parameters:
-            ctx (commands.Context): The context in which the command was invoked.
-        """
-    # Check if the user has already selected a starter
-        user_id = str(ctx.author.id)
-        with open('user_data.json', 'r') as f:
-            user_data = json.load(f)
-        if user_id in user_data and user_data[user_id]['selected']:
-            await ctx.send("You have already selected a starter!")
-            return
-
-        # Load starter data
-        with open('starter_data.json', 'r') as f:
-            starter_data = json.load(f)
-
-        # Create embed with starter pokemon information
-        embed = disnake.Embed(title="Select a Starter!", color=0x00ff00)
-        embed.set_thumbnail(url="https://archives.bulbagarden.net/media/upload/thumb/7/76/25th_Anniversary_key_art.png/375px-25th_Anniversary_key_art.png")
-        embed.set_image(url="https://archives.bulbagarden.net/media/upload/thumb/7/76/25th_Anniversary_key_art.png/375px-25th_Anniversary_key_art.png")
-        embed.description = "Choose your starter Pokémon:"
-        for emoji, info in starter_data.items():
-            embed.add_field(name=f"{info['name']} ({info['type']})", value=info['description'], inline=False)
-
-        # Send the embed to the channel
-        message = await ctx.send(embed=embed)
-
-        # Function to check message and return corresponding starter
-        def check(message):
-            return message.author == ctx.author and message.channel == ctx.channel
-
-        try:
-            # Wait for user message
-            response = await self.bot.wait_for('message', timeout=30.0, check=check)
-
-            # Check if the response is a valid starter
-            selected_starter = None
-            for emoji, info in starter_data.items():
-                if response.content.lower() == info['name'].lower():
-                    selected_starter = info
-                    break
-
-            # If a valid starter is selected
-            if selected_starter:
-                # Update user_data.json with selected starter
-                with open('user_data.json', 'r+') as f:
-                    user_data[user_id]['selected'] = selected_starter['name']
-                    f.seek(0)
-                    json.dump(user_data, f, indent=4)
-
-                # Generate IVs (Individual Values) and nature
-                iv = random.randint(0, 31)
-                nature = random.choice(["Hardy", "Lonely", "Adamant", "Naughty", "Brave", 
-                                        "Bold", "Docile", "Impish", "Lax", "Relaxed", 
-                                        "Modest", "Mild", "Bashful", "Rash", "Quiet", 
-                                        "Calm", "Gentle", "Careful", "Quirky", "Sassy", 
-                                        "Timid", "Hasty", "Jolly", "Naive", "Serious"])
-                starter_level = 5
-
-                # Update pokes.json with selected starter
-                with open('pokes.json', 'r+') as f:
-                    pokes_data = json.load(f)
-                    pokes_data[user_id] = {
-                        "selected": True,
-                        "ownerid": user_id,
-                        "pokname": selected_starter['name'],
-                        "hpiv": iv,
-                        "atkiv": iv,
-                        "defiv": iv,
-                        "spatkiv": iv,
-                        "spdefiv": iv,
-                        "speediv": iv,
-                        "hpev": 0,
-                        "atkev": 0,
-                        "defev": 0,
-                        "spatkev": 0,
-                        "spdefev": 0,
-                        "speedev": 0,
-                        "pokelevel": starter_level,
-                        "pnum": 1,
-                        "move1": "Tackle",
-                        "move2": "Tackle",
-                        "move3": "Tackle",
-                        "move4": "Tackle",
-                        "poknick": "None",
-                        "exp": 0,
-                        "nature": nature,
-                        "expcap": 35,
-                        "hitem": "None"
-                    }
-                    f.seek(0)
-                    json.dump(pokes_data, f, indent=4)
-
-                # Send confirmation message
-                await ctx.send(f"You have selected {selected_starter['name']} as your starter Pokémon!")
-
-                # Send direct message with additional information and instructions
-                await ctx.author.send("Thank you for selecting your starter Pokémon! Get ready for an adventure!")
-
-            else:
-                await ctx.send("Invalid starter Pokémon. Please choose one of the available starters.")
-
-        except asyncio.TimeoutError:
-            # Handle timeout error
-            await ctx.send("You took too long to select your starter Pokémon. Please try again.")
-
-def setup(bot):
-    """
-    Add the PokemonCog cog to the bot.
-
-    Parameters:
-    - bot (disnake.ext.commands.Bot): The bot instance.
-    """
-    bot.add_cog(PokemonCog(bot))
+async def setup(bot):
+    await bot.add_cog(Pokemon(bot))
