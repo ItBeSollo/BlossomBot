@@ -3,6 +3,24 @@ from datetime import datetime
 import json
 from discord.ext import commands
 
+def has_started():
+    async def predicate(ctx):
+        user_id = str(ctx.author.id)
+        try:
+            with open('user_data.json', 'r') as file:
+                user_data = json.load(file)
+        except FileNotFoundError:
+            await ctx.send("Error: User data not found.")
+            return False
+        
+        # Check if the user has started by looking for their ID in the user_data
+        if user_id in user_data and user_data[user_id]['started']:
+            return True
+        else:
+            await ctx.send("You haven't started yet!")
+            return False
+    return commands.check(predicate)
+
 class Users(commands.Cog):
     """
     A cog for managing user-related commands such as displaying trainer information
@@ -18,6 +36,7 @@ class Users(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=["bal"])
+    @has_started()
     async def trainer(self, ctx):
         """
         Displays the trainer card of the user who invoked the command.
