@@ -1,10 +1,28 @@
 import pokebase as pb
 import random
 from discord.ext import commands, tasks
-import random
 import json
 import asyncio
 
+natlist = ['Lonely', 'Brave', 'Adamant', 'Naughty', 'Bold', 'Relaxed', 'Impish', 'Lax', 'Timid', 'Hasty', 'Jolly', 'Naive', 'Modest', 'Mild', 'Quiet', 'Rash', 'Calm', 'Gentle', 'Sassy', 'Careful', 'Bashful', 'Quirky', 'Serious', 'Docile', 'Hardy']
+
+def has_started():
+    async def predicate(ctx):
+        user_id = str(ctx.author.id)
+        try:
+            with open('user_data.json', 'r') as file:
+                user_data = json.load(file)
+        except FileNotFoundError:
+            await ctx.send("Error: User data not found.")
+            return False
+        
+        # Check if the user has started by looking for their ID in the user_data
+        if user_id in user_data and user_data[user_id]['started']:
+            return True
+        else:
+            await ctx.send("You haven't started yet!")
+            return False
+    return commands.check(predicate)
 
 class Safari(commands.Cog):
     """A cog for managing expeditions and encounters in the safari adventure game."""
@@ -20,6 +38,30 @@ class Safari(commands.Cog):
         # Start the passive encounter task
         self.passive_encounter_task.start()
 
+    def select_ability(self, pokemon_name, hidden_ability_probability):
+        """Select an ability for the Pokémon."""
+        
+        # Fetch the Pokémon resource based on the name
+        pokemon = pb.pokemon(pokemon_name.lower())
+        
+        # Fetch abilities from species information
+        hidden_abilities = []
+        regular_abilities = []
+        for ability in pokemon.abilities:
+            # Check if the ability is a hidden ability (introduced in Gen 5 or later and not main series)
+            if ability.is_hidden:
+                hidden_abilities.append(ability.ability.name)
+            else:
+                regular_abilities.append(ability.ability.name)
+        
+        if hidden_abilities:
+            # If hidden abilities are available, randomly select one based on probability
+            if random.random() < hidden_ability_probability:
+                return random.choice(hidden_abilities)
+        
+        # If no hidden abilities or probability not met, choose a regular ability
+        return random.choice(regular_abilities)
+    
     async def update_pokemon_ids(self, user_id, user_pokemon):
         """Update the IDs of Pokémon in a user's collection."""
         for index, pokemon in enumerate(user_pokemon, start=1):
@@ -84,6 +126,7 @@ class Safari(commands.Cog):
             json.dump(self.expedition_levels, file, indent=4)
 
     @commands.command()
+    @has_started()
     async def safari(self, ctx, location: str):
         """Start an expedition in the specified location."""
         user_id = ctx.author.id
@@ -176,23 +219,7 @@ class Safari(commands.Cog):
         # Get the URL for the official artwork
         official_artwork_url = pokemon_species.sprites.other.official_artwork.front_default
         return official_artwork_url
-            
-            
-    def get_random_moves(self, pokemon_name):
-        """Get random moves for a Pokémon."""
-        try:
-            with open('moves.json', 'r') as file:
-                moves_data = json.load(file)
-                moves = moves_data.get(pokemon_name, [])
-                if len(moves) >= 2:
-                    return random.sample(moves, 2)
-                elif moves:
-                    return moves, moves[0]  # If only one move available, use it for both move slots
-                else:
-                    return ["Tackle", "Tackle"]  # Default moves if no moves data is available
-        except FileNotFoundError:
-            return ["Tackle", "Tackle"]  # Default moves if moves.json file is not found
-
+    
     def save_pokemon_to_collection(self, user_id, pokemon_name):
         """Save a found Pokémon to the user's collection."""
         # Load the existing collections from the file
@@ -209,7 +236,47 @@ class Safari(commands.Cog):
         pokemon_id = len(user_collection) + 1  # IDs start from 1 and increment by 1
 
         # Get random moves for the Pokémon
-        move1, move2 = self.get_random_moves(pokemon_name)
+        level = random.randint(1, 100)
+        move1 = move2 = move3 = move4 = "tackle"
+
+        try: 
+            # Get the Pokémon species object
+            pokemon_species = pb.pokemon(pokemon_name.lower())
+            pokemon_specie = pb.pokemon_species(pokemon_name.lower())
+            # Fetch abilities from species information
+            abilities = [ability.ability.name for ability in pokemon_species.abilities]
+            # Fetch base experience from species information
+            base_experience = pokemon_species.base_experience
+            # Fetch gender rate
+            gender_rate = pokemon_specie.gender_rate
+            # Assign probabilities for hidden abilities
+            hidden_ability_probability = 0.33  # Example probability for hidden ability
+
+        except Exception as e:
+            print(f"Error fetching species information for {pokemon_name}: {e}")
+            # Default values if an error occurs
+            abilities = []
+            base_experience = 0
+            gender_rate = -1
+            hidden_ability_probability = 0.33
+
+        # Determine the gender based on gender rate
+        if gender_rate == -1:
+            gender = None  # Genderless
+        elif gender_rate == 0:
+            gender = 'Female'
+        elif gender_rate == 8:
+            gender = 'Male'
+        else:
+            if random.random() < gender_rate / 8:
+                gender = 'Male'
+            else:
+                gender = 'Female'
+
+
+        # Randomly select an ability considering hidden abilities
+        if abilities:
+            ability = self.select_ability(pokemon_name, hidden_ability_probability)  
 
         # Get image URL for the Pokémon
         image_url = self.get_pokemon_image_url(pokemon_name)
@@ -218,14 +285,34 @@ class Safari(commands.Cog):
         pokemon_object = {
             "id": pokemon_id,
             "name": pokemon_name,
+            "gender": gender,
+            "ability": ability,
+            "nickname": "",
+            "friendship": 0,
+            "favorite": False,
             "level": random.randint(1, 30),
+            "exp": base_experience,
+            "expcap": level ** 3,
+            "nature": random.choice(natlist),
+            "hpiv": random.randint(1, 31),
+            "atkiv": random.randint(1, 31),
+            "defiv": random.randint(1, 31),
+            "spatkiv": random.randint(1, 31),
+            "spdiv": random.randint(1, 31),
+            "speiv": random.randint(1, 31),
+            "hpev": 0,
+            "atkev": 0,
+            "defev": 0,
+            "spatkev": 0,
+            "spdefev": 0,
+            "speedev": 0,
             "move 1": move1,
             "move 2": move2,
+            "move 3": move3,
+            "move 4": move4,
             "image_url": image_url,
-            "HP": 100,
-            "ATK": random.randint(1,31),
-            "DEF": random.randint(1,31),
-            "selected": False
+            "selected": False,
+            "helditem": "",
         }
 
         # Append the Pokémon object to the user's collection
