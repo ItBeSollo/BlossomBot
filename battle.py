@@ -3,6 +3,24 @@ import json
 from discord.ui import Button, View
 from discord.ext import commands
 
+def has_started():
+    async def predicate(ctx):
+        user_id = str(ctx.author.id)
+        try:
+            with open('user_data.json', 'r') as file:
+                user_data = json.load(file)
+        except FileNotFoundError:
+            await ctx.send("Error: User data not found.")
+            return False
+        
+        # Check if the user has started by looking for their ID in the user_data
+        if user_id in user_data and user_data[user_id]['started']:
+            return True
+        else:
+            await ctx.send("You haven't started yet!")
+            return False
+    return commands.check(predicate)
+
 class OptionsView(discord.ui.View):
     def __init__(self,challenger_moves, opponent_moves, challenger_id,opponent_id, battle_instance ):
         super().__init__()
@@ -112,6 +130,7 @@ class Battle(commands.Cog):
         message = await ctx.send(embed=embed, view=view)
         return message
     @commands.command()
+    @has_started()
     async def challenge(self, ctx, opponent: discord.Member):
         self.opponent = opponent
     
@@ -152,6 +171,7 @@ class Battle(commands.Cog):
         return damage
     
     @commands.command()
+    @has_started()
     async def attack(self, ctx, move_num: int):
         if not self.is_in_battle(ctx.author):
             await ctx.send("You are not currently in a battle!")
@@ -220,6 +240,7 @@ class Battle(commands.Cog):
         self.current_turn = None
         self.battle_participants.clear()
     @commands.command()
+    @has_started()
     async def use_item(self, ctx, item_name: str):
         if not self.is_in_battle(ctx.author):
             await ctx.send("You are not currently in a battle!")
@@ -232,6 +253,7 @@ class Battle(commands.Cog):
         await self.update_battle_info(ctx)  
 
     @commands.command()
+    @has_started()
     async def forfeit(self, ctx):
         if not self.is_in_battle(ctx.author):
             await ctx.send("You are not currently in a battle!")
