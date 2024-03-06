@@ -4,6 +4,23 @@ import asyncio
 import random
 from discord.ext import commands
 
+def has_started():
+    async def predicate(ctx):
+        user_id = str(ctx.author.id)
+        try:
+            with open('user_data.json', 'r') as file:
+                user_data = json.load(file)
+        except FileNotFoundError:
+            await ctx.send("Error: User data not found.")
+            return False
+        
+        # Check if the user has started by looking for their ID in the user_data
+        if user_id in user_data and user_data[user_id]['started']:
+            return True
+        else:
+            await ctx.send("You haven't started yet!")
+            return False
+    return commands.check(predicate)
 class Trivia(commands.Cog):
     """
     A cog for managing trivia games, including starting games, answering questions, and displaying leaderboards.
@@ -45,6 +62,7 @@ class Trivia(commands.Cog):
             return json.load(file)
 
     @commands.command()
+    @has_started()
     async def trivia(self, ctx, difficulty: str = 'medium'):
         """
         Starts a trivia game.
@@ -147,6 +165,7 @@ class Trivia(commands.Cog):
             json.dump(user_scores, file, indent=4)
 
     @commands.command()
+    @has_started()
     async def leaderboard(self, ctx):
         """
         Displays the trivia leaderboard.
