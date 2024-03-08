@@ -1,5 +1,5 @@
 from discord.ext import commands, tasks
-import pokebase as pb
+import requests
 import random
 import json
 
@@ -16,7 +16,7 @@ def has_started():
             return False
         
         # Check if the user has started by looking for their ID in the user_data
-        if user_id in user_data and user_data[user_id]['started']:
+        if user_id in user_data:
             return True
         else:
             await ctx.send("You haven't started yet!")
@@ -355,25 +355,38 @@ class Raids(commands.Cog):
         level = random.randint(1, 100)
         move1 = move2 = move3 = move4 = "tackle"
 
-        try: 
-            # Get the Pokémon species object
-            pokemon_species = pb.pokemon(pokemon_name.lower())
-            # Fetch abilities from species information
-            abilities = [ability.ability.name for ability in pokemon_species.abilities]
-            # Fetch base experience from species information
-            base_experience = pokemon_species.base_experience
-            # Fetch gender rate
-            gender_rate = pokemon_species.gender_rate
-            # Assign probabilities for hidden abilities
-            hidden_ability_probability = 0.5  # Example probability for hidden ability
-
+        try:
+            # Get the Pokémon data from PokeAPI
+            pokemon_url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_name.lower()}"
+            response = requests.get(pokemon_url)
+            if response.status_code == 200:
+                pokemon_data = response.json()
+                pokemon_species_url = pokemon_data['species']['url']
+                species_response = requests.get(pokemon_species_url)
+                if species_response.status_code == 200:
+                    species_data = species_response.json()
+                    abilities = [ability['ability']['name'] for ability in pokemon_data['abilities']]
+                    base_experience = pokemon_data['base_experience']
+                    gender_rate = species_data['gender_rate']
+                    hidden_ability_probability = 0.33  # Example probability for hidden ability
+                else:
+                    print(f"Error fetching species information for {pokemon_name}")
+                    abilities = []
+                    base_experience = 0
+                    gender_rate = -1
+                    hidden_ability_probability = 0.33
+            else:
+                print(f"Error fetching Pokémon data for {pokemon_name}")
+                abilities = []
+                base_experience = 0
+                gender_rate = -1
+                hidden_ability_probability = 0.33
         except Exception as e:
-            print(f"Error fetching species information for {pokemon_name}: {e}")
-            # Default values if an error occurs
+            print(f"Error fetching Pokémon information for {pokemon_name}: {e}")
             abilities = []
             base_experience = 0
             gender_rate = -1
-            hidden_ability_probability = 0.5
+            hidden_ability_probability = 0.33
 
         # Determine the gender based on gender rate
         if gender_rate == -1:
@@ -388,9 +401,10 @@ class Raids(commands.Cog):
             else:
                 gender = 'Female'
 
+
         # Randomly select an ability considering hidden abilities
         if abilities:
-            ability = self.select_ability(pokemon_name, hidden_ability_probability)
+            ability = self.select_ability(pokemon_name, hidden_ability_probability)  
 
         # Get image URL for the Pokémon
         image_url = self.get_pokemon_image_url(pokemon_name)
@@ -398,6 +412,8 @@ class Raids(commands.Cog):
         # Create a Pokémon object
         pokemon_object = {
             "id": pokemon_id,
+            "ownerid": user_id,
+            "OT": user_id,
             "name": pokemon_name,
             "gender": gender,
             "ability": ability,
@@ -427,6 +443,7 @@ class Raids(commands.Cog):
             "image_url": image_url,
             "selected": False,
             "helditem": "",
+            "is_shiny": False
         }
 
         # Append the Pokémon object to the user's collection
@@ -440,37 +457,48 @@ class Raids(commands.Cog):
             json.dump(collections, file, indent=4)
 
     def get_pokemon_image_url(self, pokemon_name):
-        """Get the image URL for a Pokémon."""
-        # Get the Pokemon species object based on the name
-        pokemon_species = pb.pokemon(pokemon_name.lower())
-
-        # Get the URL for the official artwork
-        official_artwork_url = pokemon_species.sprites.other.pokemon_species.sprites.official_artwork.front_default
-        return official_artwork_url
+        """Get the image URL for a Pokémon from PokeAPI."""
+        pokemon_url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_name.lower()}"
+        response = requests.get(pokemon_url)
+        if response.status_code == 200:
+            pokemon_data = response.json()
+            return pokemon_data['sprites']['other']['official-artwork']['front_default']
+        else:
+            return None
 
     def select_ability(self, pokemon_name, hidden_ability_probability):
         """Select an ability for the Pokémon."""
         
-        # Fetch the Pokémon resource based on the name
-        pokemon = pb.pokemon(pokemon_name.lower())
+        # Fetch the Pokémon resource based on the name from PokeAPI
+        pokemon_url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_name.lower()}"
+        response = requests.get(pokemon_url)
+        if response.status_code == 200:
+            pokemon_data = response.json()
+            abilities = [ability['ability']['name'] for ability in pokemon_data['abilities']]
+        else:
+            print(f"Error fetching Pokémon data for {pokemon_name}")
+            abilities = []
         
-        # Fetch abilities from species information
-        hidden_abilities = []
-        regular_abilities = []
-        for ability in pokemon.abilities:
-            # Check if the ability is a hidden ability (introduced in Gen 5 or later and not main series)
-            if ability.is_hidden:
-                hidden_abilities.append(ability.ability.name)
-            else:
-                regular_abilities.append(ability.ability.name)
-        
+        hidden_abilities = [ability for ability in abilities if self.is_hidden_ability(ability)]
+
         if hidden_abilities:
             # If hidden abilities are available, randomly select one based on probability
             if random.random() < hidden_ability_probability:
                 return random.choice(hidden_abilities)
         
         # If no hidden abilities or probability not met, choose a regular ability
-        return random.choice(regular_abilities)
+        return random.choice(abilities)
+
+    def is_hidden_ability(self, ability_name):
+        """Check if the ability is a hidden ability."""
+        ability_url = f"https://pokeapi.co/api/v2/ability/{ability_name}"
+        response = requests.get(ability_url)
+        if response.status_code == 200:
+            ability_data = response.json()
+            return ability_data.get("is_hidden", False)
+        else:
+            print(f"Error fetching ability data for {ability_name}")
+            return False
 
 async def setup(bot):
     await bot.add_cog(Raids(bot))
