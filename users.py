@@ -14,7 +14,7 @@ def has_started():
             return False
         
         # Check if the user has started by looking for their ID in the user_data
-        if user_id in user_data and user_data[user_id]['started']:
+        if user_id in user_data:
             return True
         else:
             await ctx.send("You haven't started yet!")
@@ -90,12 +90,12 @@ class Users(commands.Cog):
         )
         embed.add_field(
             name="General Info",
-            value=f"`Pokemon Caught`: {total_pokemon_caught}\n`Active Region`: {user_info.get('activeregion', 'N/A')}\n`EV Points`: {user_info.get('evpoints', 'N/A')}",
+            value=f"`Pokemon Caught`: {total_pokemon_caught}\n`Active Region`: {user_info.get('activeregion', 'N/A')}\n`EV Points`: {user_info.get('evpoints', 'N/A'):,d}",
             inline=True
         )
         embed.add_field(
             name="Balances",
-            value=f"`Tokens`: {user_info.get('tokens', 'N/A'):,d}\n`Redeems`: {user_info.get('redeems', 'N/A')}\n`BP`: {user_info.get('battlepoints', 'N/A')}",
+            value=f"`Tokens`: {user_info.get('tokens', 'N/A'):,d}\n`Redeems`: {user_info.get('redeems', 'N/A') :,d}\n`BP`: {user_info.get('battlepoints', 'N/A') :,d}",
             inline=True
         )
         embed.set_footer(text="Trainer Card", icon_url=ctx.author.avatar)
