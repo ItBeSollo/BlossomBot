@@ -12,8 +12,10 @@ This Discord bot is built using Python and the Discord.py library. It offers a r
 - **Raid:** Organize and participate in raids against powerful raid bosses.
 - **Safari:** Start expeditions in different locations to discover wild Pokémon.
 - **Shop:** Buy items from the shop and manage your inventory.
-- **TriviaCog:** Host trivia games and view the trivia leaderboard.
-- **UsersCog:** Commands for managing user profiles and displaying trainer cards.
+- **Trivia:** Host trivia games and view the trivia leaderboard.
+- **Users:** Commands for managing user profiles and displaying trainer cards.
+- - **Trading:** Commands for trading between discord users.
+- **Market:** Commands for interacting with the market.
 
 ## Looking for Help!
 If you're passionate about Pokémon and Discord bot development, we'd love your help to continue improving this bot! Whether you're skilled in Python programming, Discord bot architecture, or Pokémon mechanics, there's a place for you in our development community. Feel free to reach out if you're interested in contributing or have any suggestions for new features.
