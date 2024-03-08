@@ -15,7 +15,7 @@ def has_started():
             return False
         
         # Check if the user has started by looking for their ID in the user_data
-        if user_id in user_data and user_data[user_id]['started']:
+        if user_id in user_data:
             return True
         else:
             await ctx.send("You haven't started yet!")
