@@ -5,6 +5,21 @@ from discord.ext import commands
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+    
+    @commands.command()
+    @commands.is_owner()  # Ensure only the bot owner can use this command
+    async def reload(self, ctx, cog_name: str):
+        try:
+            # Unload the specified cog
+            await self.bot.unload_extension(cog_name)
+            # Reload the specified cog
+            await self.bot.load_extension(cog_name)
+            await ctx.send(f"Cog `{cog_name}` has been reloaded.")
+        except commands.ExtensionNotFound:
+            await ctx.send(f"Cog `{cog_name}` not found.")
+        except commands.ExtensionFailed as e:
+            await ctx.send(f"Failed to reload cog `{cog_name}`. Error: {e}")
+
     @commands.command(aliases=["yeet"])
     @commands.is_owner()
     async def wipe(self, ctx, user_id: int):
